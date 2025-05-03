@@ -4,26 +4,32 @@ const tiMonth = (ipc) => {
     return ti
 } 
 
-const fuelEnergySelector = async (data, scraping) => {
+const fuelEnergySelector = (data) => {
     let fuel_info = {}
     if (data === 'diesel' || data == 'Diesel') {
-        fuel_info['fuel_price'] = scraping['diesel_price']
-        fuel_info['fuel_energy'] = ('diesel_energy')
-        fuel_info['emision_factor'] = ('emision_factor_diesel')
+        fuel_info['fuel_price'] = 11798
+        fuel_info['fuel_energy'] = 40.7
+        fuel_info['emision_factor'] = 74.01
         return fuel_info
     }
-    else {
-        fuel_info['fuel_price'] = scraping['fuel_price']
-        fuel_info['fuel_energy'] = ('gasoline_energy')
-        fuel_info['emision_factor'] = ('emision_factor_gasoline')
+    if(data === 'gasoline' || data === 'Gasoline'){
+        fuel_info['fuel_price'] = 16700
+        fuel_info['fuel_energy'] = 35.58
+        fuel_info['emision_factor'] = 69.25
         return fuel_info
     }
+    if (data === 'gasoline' || data != 'diesel'){
+        return {
+          "error":  "Tipo combustible no valido",
+        "error_code": 500
+        }
+    }    
 }
 
 //  kWh/km
-const electricalConsumption = async (nominal_energy, autonomy_nominal) => {
+const electricalConsumption = (nominal_energy, autonomy_nominal) => {
 
-    const electrical_consumption = (nominal_energy/(autonomy_nominal*('autonomy_factor')))
+    const electrical_consumption = (nominal_energy/(autonomy_nominal*(0.9)))
     return electrical_consumption
 }
 
@@ -34,8 +40,8 @@ const costElectricalKM = (electrical_consumption, energy_price) => {
     return cost_electrical_km
 }
 
-const combustionConsumption = async (electrical_consumption) => {
-    const combustion_consumption = (electrical_consumption / ('combustion_engine_efficiency') )
+const combustionConsumption = (electrical_consumption) => {
+    const combustion_consumption = (electrical_consumption / (0.27) )
 
     return combustion_consumption
 }
@@ -54,7 +60,7 @@ const fuelEfficiency = (fuel_consumption) => {
 }
 
 const fuelCostKm = (fuel_price, fuel_consumption) => {
-    const fuel_cost_km = (fuel_price['fuel_price']*fuel_consumption)
+    const fuel_cost_km = (fuel_price*fuel_consumption)
     
     return fuel_cost_km
 }
@@ -72,7 +78,6 @@ const emisionKm = (emision_factor, energy_km) => {
 
 const savedEnergy = (combustion_consumption, electrical_consumption, annual_use) => {
     const saved_energy = ((combustion_consumption-electrical_consumption)*annual_use)
-
     return saved_energy
 }
 
